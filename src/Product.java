@@ -4,7 +4,6 @@ import java.util.HashMap;
  * Superclass
  */
 public abstract class Product {
-    private HashMap<String, String> properties = new HashMap<>();
     private String model,brand;
     private double price;
 
@@ -64,7 +63,6 @@ public abstract class Product {
                 this.price = Double.parseDouble(price);
             }
             else{
-                properties.put(CCS.getPrice(), "-1");
                 this.price = -1;
             }
         }
@@ -73,19 +71,6 @@ public abstract class Product {
         }
 
     }
-
-    public HashMap<String, String> pullProperties(){
-        this.properties.put(CCS.getModel(), getModel());
-        this.properties.put(CCS.getBrand(), getBrand());
-        this.properties.put(CCS.getPrice(), String.valueOf(getPrice()));
-        return properties;
-    }
-    public void pushProperties(HashMap<String, String> properties){
-        setModel(properties.get(CCS.getModel()));
-        setBrand(properties.get(CCS.getBrand()));
-        setPrice(properties.get(CCS.getPrice()));
-    }
-
     @Override
     public String toString() {
         return "Product{" +
@@ -93,5 +78,19 @@ public abstract class Product {
                 ", brand='" + brand + '\'' +
                 ", price=" + price +
                 '}';
+    }
+
+    /**
+     * String for identification purposes
+     * @param bool
+     * @return true - return in one line; false - return in two lines
+     */
+    public String getIdentifier(boolean bool){
+        if (bool){
+            return "Marke: " + brand + " - Model: " + model;
+        } else {
+            return "Marke: " + brand + "\nModel: " + model;
+        }
+
     }
 }

@@ -74,6 +74,9 @@ public class CC {
         return dummyData;
     }
 
+    /**
+     * Method to create dummy data for test purposes
+     */
     public static void setDummyData() {
         dummyData.add(new ProductKeyboard("Model Tastatur", "Tastaturfirma", 19.99, "Deutsch"));
         dummyData.add(new ProductKeyboard("Model Keyboard", "Keyboardcompany", 16.99, "English"));
@@ -83,5 +86,6 @@ public class CC {
         dummyData.add(new ProductMouse("Model Mouse","Mousecompany",5.99,"Darkfield"));
         dummyData.add(new ProductMotherboard("Model Mainboard", "Mainboardfirma",49.99,"ATX"));
         dummyData.add(new ProductMotherboard("Model Motherboard", "Motherboardcompany",69.99,"mATX"));
+        Products.set(dummyData);
     }
 }

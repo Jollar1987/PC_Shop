@@ -26,17 +26,6 @@ public class ProductKeyboard extends Product{
             this.layout = null;
         }
     }
-
-    public HashMap<String, String> pullProperties(){
-        HashMap<String, String> properties = super.pullProperties();
-        properties.put(CCS.getLayout(), "");
-        return properties;
-    }
-    public void pushProperties(HashMap<String, String> properties){
-        super.pushProperties(properties);
-        setLayout(properties.get(CCS.getLayout()));
-    }
-
     @Override
     public String toString() {
         return "ProductKeyboard{" +

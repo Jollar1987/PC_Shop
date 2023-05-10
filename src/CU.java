@@ -38,9 +38,9 @@ public class CU{
 
     /**
      * prints a separatorline to the console
-     * @param typ declares typ of line
-     *            true - long line
-     *            false - short line
+     * @param typ declares typ of line;
+     *            true - long line in green;
+     *            false - short line in blue
      */
     public static void consoleSeparatorLine(boolean typ){
         if (typ) {
@@ -49,8 +49,25 @@ public class CU{
             System.out.println("[36m----------------------[0m");
         }
     }
+    /**
+     * prints a separatorline to the console
+     * @param typ declares typ of line;
+     *            true - long line in red;
+     *            false - short line in red
+     */
+    public static void consoleErrorSeparatorLine(boolean typ ){
+        if (typ) {
+            System.out.println("[31m-----------------------------------------------[0m");
+        } else {
+            System.out.println("[31m----------------------[0m");
+        }
+    }
 
-
+    /**
+     * Method to check if String is a Number
+     * @param non
+     * @return true if number
+     */
     public static boolean isNumeric(String non) {
         if (non == null) {
             return false;

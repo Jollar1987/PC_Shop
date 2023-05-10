@@ -26,17 +26,6 @@ public class ProductMotherboard extends Product{
             this.formFactor = null;
         }
     }
-
-    public HashMap<String, String> pullProperties(){
-        HashMap<String, String> properties = super.pullProperties();
-        properties.put(CCS.getFormFactor(), "");
-        return properties;
-    }
-    public void pushProperties(HashMap<String, String> properties){
-        super.pushProperties(properties);
-        setFormFactor(properties.get(CCS.getFormFactor()));
-    }
-
     @Override
     public String toString() {
         return "ProductMotherboard{" +

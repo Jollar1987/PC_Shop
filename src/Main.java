@@ -3,13 +3,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Main {
-    static ArrayList<Product> products = new ArrayList<>();
-
     public static void main(String[] args) throws Exception {
         CC.setDummyData();
         CC.setConstants();
-        products = CC.getDummyData();
-
         /*
         String test1 = "Hallo,";
         String test2 = null;
@@ -62,5 +58,8 @@ public class Main {
 
     public static void produktSuchen() {
         Menu.search();
+    }
+    public static void produktBearbeiten() throws Exception {
+        Menu.edit();
     }
 }

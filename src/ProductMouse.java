@@ -26,17 +26,6 @@ public class ProductMouse extends Product{
             this.sensors = null;
         }
     }
-
-    public HashMap<String, String> pullProperties(){
-        HashMap<String, String> properties = super.pullProperties();
-        properties.put(CCS.getSensors(), "");
-        return properties;
-    }
-    public void pushProperties(HashMap<String, String> properties){
-        super.pushProperties(properties);
-        setSensors(properties.get(CCS.getSensors()));
-    }
-
     @Override
     public String toString() {
         return "ProductMouse{" +

@@ -13,6 +13,8 @@ public class Function {
      */
     public static Product create(Product product) throws Exception {
         boolean firstIteration = true;
+        boolean secondIteration = false;
+        boolean erroroccurence = false;
         boolean repeat;
         do {
             repeat = false;
@@ -27,8 +29,12 @@ public class Function {
                             repeat = true;
                         } else {
                             if (fieldValue == -1) {//check requirements of attribute
-                                repeat = true;//repeater-attribute -- to doublecheck for correct input
-                                invokeSetterWithInputValue(field.getType().getSimpleName(), product.getClass(), field.getName(), product, firstIteration);
+                                if (!secondIteration) {
+                                    repeat = true;//repeater-attribute -- to doublecheck for correct input
+                                    invokeSetterWithInputValue(field.getType().getSimpleName(), product.getClass(), field.getName(), product, firstIteration);
+                                } else {
+                                    erroroccurence = true;
+                                }
                             }
                         }
                     } else if (field.getType() == String.class) {//check if Object-attribute is String
@@ -38,14 +44,18 @@ public class Function {
                             repeat = true;
                         }else {
                             if (fieldValue == null) {//check requirements of attribute
-                                repeat = true;//repeater-attribute -- to doublecheck for correct input
-                                invokeSetterWithInputValue(field.getType().getSimpleName(), product.getClass(), field.getName(), product, firstIteration);
+                                if (!secondIteration) {
+                                    repeat = true;//repeater-attribute -- to doublecheck for correct input
+                                    invokeSetterWithInputValue(field.getType().getSimpleName(), product.getClass(), field.getName(), product, firstIteration);
+                                } else {
+                                    erroroccurence = true;
+                                }
                             }
                         }
                     } else if (field.getType() == ArrayList.class) {//check if Object-attribute is ArrayList
                         ParameterizedType genericType = (ParameterizedType) field.getGenericType();//get generic Typ
                         Class<?> listType = (Class<?>) genericType.getActualTypeArguments()[0];//get specific  argumenttyp
-                        if (firstIteration){
+                        if (firstIteration && listType == String.class){
                             invokeSetterWithInputValue(field.getType().getSimpleName(), product.getClass(), field.getName(), product, firstIteration);
                             repeat = true;
                         } else {
@@ -59,104 +69,37 @@ public class Function {
                                 }
                             }
                             if (containsError && listType == String.class) {
-                                repeat = true;//repeater-attribute -- to doublecheck for correct input
-                                invokeSetterWithInputValue(field.getType().getSimpleName(), product.getClass(), field.getName(), product, firstIteration);
+                                if (!secondIteration) {
+                                    repeat = true;//repeater-attribute -- to doublecheck for correct input
+                                    invokeSetterWithInputValue(field.getType().getSimpleName(), product.getClass(), field.getName(), product, firstIteration);
+                                } else {
+                                    erroroccurence = true;
+                                }
                             }
                         }
                     }
                 }
                 iterator = (Class<? extends Product>) iterator.getSuperclass();//switch to superclass of object
             }
+            if (secondIteration){//condition for switch to mainMenu if one or more attributes are false input
+                if (erroroccurence) {
+                    CU.consoleErrorSeparatorLine(true);
+                    System.out.println("Produkt konnte aufgrund leerer/falscher Eingabewerte nicht gespeichert werden");
+                    CU.consoleErrorSeparatorLine(true);
+                    Menu.correction();
+                }
+                secondIteration = false;
+                repeat =true;
+            }
+            if (firstIteration) {
+                secondIteration = true;
+            }
             firstIteration = false;
         }while(repeat);
     return product;
     }
 
-    /**
-     * method that prompt user to input value for attribute and invokes setter and sets attribute
-     */
-    /*
-    private static void invokeSetterWithInputValue(String simpleName, Class<?> classs, String fieldName, Object obj, boolean firstIteration) throws Exception {
-        String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);//set a String for Method invocation
-        Method getterMethodLanguageString = CCS.class.getMethod(getterMethodName);//sets a getter method for custom constant strings
-        ArrayList<String> valueList = new ArrayList<>();
-        try{
-            Method getterMethodValueList = CC.class.getMethod(getterMethodName);//sets a getter method for custom constants
-            valueList = (ArrayList<String>) getterMethodValueList.invoke(null);//assign ValueList if available
-        } catch (NoSuchMethodException e) {
-            //nothing to do if Valuelist isn't available
-        }
-        CU.consoleSeparatorLine(true);
-        if (!firstIteration) {
-            System.err.println("Fehlerhafte Eingabe für " + getterMethodLanguageString.invoke(null));
-            CU.pause(250);
-        }
-        String value = "";
-        if (simpleName.equals("ArrayList")) {
-            System.out.println("Werte für " + getterMethodLanguageString.invoke(null) + ":");
-            //part of vergleich Auflistung möglicher Eingaben
-            if (!firstIteration) {
-                if (valueList.size() != 0) {
-                    System.out.println("Eingabemöglichkeiten");
-                    for (String element : valueList) {
-                        System.out.println(element);
-                    }
-                }
-            }
-            //ende part of vergleich
-            System.out.println("(Zum beenden, esc, abbruch oder ende)");
-            String valuePart = "";
-            for (int i = 1; i >= 0; i++){
-                CU.consoleSeparatorLine(false);
-                if (i != 0 && valuePart != null) {
-                    value += ",";
-                }
-                System.out.print(i + ". Wert eingeben: ");
-                valuePart = CU.sc.nextLine();
-                if( valuePart.equalsIgnoreCase("esc") ||
-                    valuePart.equalsIgnoreCase("abbruch") ||
-                    valuePart.equalsIgnoreCase("beenden") ||
-                    valuePart.equalsIgnoreCase("ende") ||
-                    valuePart.equalsIgnoreCase("exit")){
-                    break;
-                }
-                if (valueList.size() != 0) {//Vergleich
-                    boolean inList = false;
-                    for (String element : valueList) {
-                        if (valuePart.equals(element)) {
-                            inList = true;
-                            break;
-                        }
-                    }
-                    if (!inList) {
-                        valuePart = null;
-                    }
-                }
-                //EndeVergleich
-                value += valuePart;
-            }
-        } else{
-            System.out.print("Wert für " + getterMethodLanguageString.invoke(null) + ": ");
-            value = CU.sc.nextLine();
-            if (valueList.size() != 0){
-                boolean inList = false;
-                for (String element: valueList){
-                    if (value.equals(element)){
-                        inList = true;
-                        break;
-                    }
-                }
-                if (!inList){
-                    value = null;
-                }
-            }
-        }
-        String setterMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        Method setterMethod = classs.getMethod(setterMethodName, String.class);
-        setterMethod.invoke(obj,value);
-    }
-    */
-    private static void invokeSetterWithInputValue(String simpleName, Class<?> classs, String fieldName, Object product, boolean firstIteration) throws Exception {
+    private static void invokeSetterWithInputValue(String simpleName, Class<?> aClass, String fieldName, Object product, boolean firstIteration) throws Exception {
         String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);//set a String for Method invocation
         Method getterMethodLanguageString = CCS.class.getMethod(getterMethodName);//sets a getter method for custom constant strings
         ArrayList<String> availableValueList = new ArrayList<>();
@@ -174,10 +117,9 @@ public class Function {
         String value = "";
         if (simpleName.equals("ArrayList")) {
             System.out.println("Werte für " + getterMethodLanguageString.invoke(null) + ":");
-            //part of vergleich Auflistung möglicher Eingaben
             if (!firstIteration) {
                 String getterMethodArrayListName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                Method getterMethodArrayList = classs.getMethod(getterMethodArrayListName);
+                Method getterMethodArrayList = aClass.getMethod(getterMethodArrayListName);
                 ArrayList<String> valueList;
                 valueList = (ArrayList<String>) getterMethodArrayList.invoke(product);
                 if (availableValueList.size() != 0) {
@@ -232,11 +174,9 @@ public class Function {
                             i--;
                         }
                     }
-                    //EndeVergleich
                     value += valuePart;
                 }
             } else {
-                //ende part of vergleich
                 System.out.println("(Zum beenden, esc, abbruch oder ende)");
                 String valuePart = "";
                 for (int i = 1; i >= 0; i++) {
@@ -268,7 +208,6 @@ public class Function {
                     }
                     //EndeVergleich
                     value += valuePart;
-                    System.out.println(value);
                 }
             }
         } else{
@@ -288,11 +227,22 @@ public class Function {
             }
         }
         String setterMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        Method setterMethod = classs.getMethod(setterMethodName, String.class);
+        Method setterMethod = aClass.getMethod(setterMethodName, String.class);
         setterMethod.invoke(product,value);
     }
     private static void search(){
 
+    }
+
+    public static void edit(Product product) throws Exception {
+        Class<? extends Product> iterator = product.getClass();
+        while (iterator != null){
+            for (Field field : iterator.getDeclaredFields()) {
+                String getterMethodName = "get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
+                Method getterMethodLanguageString = CCS.class.getMethod(getterMethodName);
+                getterMethodLanguageString.invoke(null);
+            }
+        }
     }
 }
 /*
